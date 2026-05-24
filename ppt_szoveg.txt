@@ -1,0 +1,49 @@
+Frontend
+A frontend React és TypeScript kombinációjával készült, amely típusbiztonságot és átlátható komponensstruktúrát biztosít.
+Az alkalmazás Single Page Application elven működik, az oldalváltások React Router segítségével történnek, teljes újratöltés nélkül.
+A stílusozás Tailwind CSS alapú, egyedi CSS változókkal kiegészítve, amelyek az egész alkalmazásban egységes színvilágot és megjelenést biztosítanak.
+A bejelentkezett felhasználó adatait és tokenjét egy AuthProvider kontextus őrzi, amely a sessionStorage-ban tárolódik el, így a böngészőfül bezárásakor automatikus kijelentkezés történik.
+A backend kommunikáció Axios-on keresztül valósul meg, egy közös konfigurációs fájllal, amely minden kéréshez automatikusan hozzáfűzi a hitelesítési tokent.
+Az újrafelhasználható komponensek között található egy drag-and-drop képfeltöltő, egy egyedi multi-select felszereltség-választó, egy lightboxos képgaléria és egy törtszámot is kezelő csillagos értékelő.
+A reszponzív kialakítás öt töréspontot alkalmaz 480px-től 1024px-ig, mobilon egyoszlopos elrendezéssel és animált hamburger menüvel.
+
+The file structure is cleanly separated into pages, components, hooks, layouts, routes, and API config, making the codebase easy to navigate and extend.
+The admin dashboard is built from four dedicated components covering users, listings, rentings, and reviews, each with table views and two-step delete confirmation.
+The FilterBar lets users filter properties by city, county, price range, area, room count, and availability, with advanced filters hidden in a collapsible panel to save screen space.
+The UI component library provides base elements like buttons, inputs, and sliders, all styled with Tailwind to match the project's visual identity.
+The StarReviews component handles fractional values by rendering partially filled stars, giving a more precise visual representation of average ratings.
+The Navbar collapses into a hamburger menu on small screens, which closes automatically on outside click detected via a useRef hook.
+Frontend testing covered key user flows such as unauthorized access redirection, permission-based button visibility, listing creation, and city-based filtering.
+Backend
+A backend Laravel PHP keretrendszerre épül, amely MVC architektúrát követve tisztán elkülöníti az adatkezelést, az üzleti logikát és az API réteget.
+A hitelesítés Laravel Sanctum csomag segítségével valósul meg, token alapon, amely állapotmentes és jól illeszkedik a különálló frontend architektúrához.
+Az adatbázis középpontjában a rents tábla áll, köré épülnek a referencia táblák, kapcsolótáblák és a bérlési tranzakciókat kezelő rentings tábla.
+A képek Base64 formátumban kerülnek az adatbázisba, így fájlrendszeres tárolás nélkül, közvetlenül kiszolgálhatók a frontend számára.
+A reviews tábla azonosítója megegyezik a kapcsolódó rentings rekord azonosítójával, ezzel adatbázis szinten biztosítva, hogy egy bérléshez csak egyetlen értékelés tartozhat.
+A rentings tábla a tranzakció pillanatában érvényes árat is rögzíti, így az ár később sem változik meg visszamenőleg, ha a hirdetés ára módosul.
+Az API végpontok három szintre osztottak: publikus, bejelentkezett felhasználói és adminisztrátori, amelyeket mind a frontend, mind a backend külön ellenőriz.
+
+The backend exposes a fully RESTful API that communicates exclusively in JSON, using standard HTTP methods and status codes to indicate the result of each operation.
+Each controller is responsible for a single resource, keeping the business logic focused and testable, from authentication and listings to image uploads and reviews.
+Reference data such as cities, counties, rent types, and utility options are stored in separate tables, preventing types and making filtering reliable and consistent.
+The many-to-many relationship between properties and amenities is handled through a junction table, allowing any number of features to be assigned without modifying the main listings table.
+Password hashing, token generation, and validation are all handled by Laravel's built-in tools, reducing the need for custom security logic.
+The project supports Docker-based deployment through a docker-compose setup that runs the Laravel backend, React frontend, and MySQL database as separate containers.
+Backend functionality was validated through feature tests covering login, registration, listing creation, image upload, and duplicate review prevention.
+Adatbázis
+Az adatbázis tervezésének középpontjában a rents tábla áll, amelyhez az összes többi tábla közvetlenül vagy közvetve kapcsolódik.
+A városok, megyék, bérlési típusok és felszereltségi elemek külön referencia táblákban vannak tárolva, ezzel biztosítva az adatok következetességét és könnyű karbantarthatóságát.
+A felszereltségi elemek és az ingatlanok között many-to-many kapcsolat van, amelyet egy utilities kapcsolótábla kezel a rents és utility_options táblák között.
+A reviews tábla egyedi tervezési döntése, hogy azonosítója nem auto-increment, hanem megegyezik a kapcsolódó rentings rekord azonosítójával, így adatbázis szinten kizárt a duplikált értékelés.
+A rentings tábla a bérlés pillanatában érvényes árat is eltárolja, így az eredeti tranzakciós ár visszamenőleg sem változik meg, ha a hirdetés ára később módosul.
+A képek a rent_images táblában Base64 formátumban tárolódnak, minden rekord a saját rent_id-jén keresztül kapcsolódik az ingatlanhoz.
+A táblák számát tudatosan minimálisra korlátozták, elkerülve a feleslegesen elaprózott adatmodellt, amely lassabb és bonyolultabb JOIN lekérdezéseket eredményezne.
+
+The database follows a normalized structure where lookup data like cities, counties, and rent types are kept in separate reference tables rather than stored as plain text in the listings.
+The junction table pattern is used for amenities, allowing flexible assignment of any number of features to a property without altering the core listings table.
+A deliberate design choice was made in the reviews table: its primary key is manually set to match the related renting record's ID, enforcing a strict one-review-per-rental rule at the database level.
+The rent_images table stores images as Base64-encoded strings, which simplifies retrieval since no file system path management is needed.
+The rentings table captures the agreed price at the time of transaction, creating an immutable financial record that remains accurate even if the listing price changes later.
+Foreign key relationships between tables ensure referential integrity throughout the data model, preventing orphaned records from accumulating over time.
+Performance was kept in mind during the design phase, as an overly fragmented schema would lead to complex multi-join queries and slower response times on listing pages.
+

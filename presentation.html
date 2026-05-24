@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MAPUMA Lakáscentrum — Záródolgozat 2026</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #f2ece3;
+        --surface: rgba(44, 32, 21, 0.05);
+        --border: rgba(44, 32, 21, 0.13);
+        --text: #2c2015;
+        --muted: #9c8e82;
+      }
+
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        height: 100vh;
+        overflow: hidden;
+        display: grid;
+        grid-template-rows: auto auto auto 1fr auto;
+        transition: background 0.6s ease;
+      }
+
+      /* ── Glow background ── */
+      #glow {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        transition: background 0.7s ease;
+      }
+
+      /* ── Top bar ── */
+      .topbar {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px 48px 0;
+      }
+      .project-title {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .slide-counter {
+        font-size: 13px;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+      }
+
+      /* ── Progress bar ── */
+      .progress-wrap {
+        position: relative;
+        z-index: 10;
+        height: 2px;
+        background: var(--border);
+        margin: 18px 48px 0;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      #progress-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition:
+          width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+          background 0.5s ease;
+      }
+
+      /* ── Section tabs ── */
+      .tabs {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        gap: 8px;
+        padding: 16px 48px 0;
+      }
+      .tab {
+        padding: 5px 16px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+        transition: all 0.3s ease;
+      }
+      .tab.fe {
+        border-color: rgba(37, 99, 235, 0.25);
+        color: rgba(37, 99, 235, 0.45);
+      }
+      .tab.be {
+        border-color: rgba(4, 120, 87, 0.25);
+        color: rgba(4, 120, 87, 0.45);
+      }
+      .tab.db {
+        border-color: rgba(180, 83, 9, 0.25);
+        color: rgba(180, 83, 9, 0.45);
+      }
+      .tab.fe.on {
+        background: rgba(37, 99, 235, 0.1);
+        border-color: rgba(37, 99, 235, 0.45);
+        color: #1e40af;
+      }
+      .tab.be.on {
+        background: rgba(4, 120, 87, 0.1);
+        border-color: rgba(4, 120, 87, 0.45);
+        color: #065f46;
+      }
+      .tab.db.on {
+        background: rgba(180, 83, 9, 0.1);
+        border-color: rgba(180, 83, 9, 0.45);
+        color: #92400e;
+      }
+
+      /* ── Slide area ── */
+      .slide-area {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 48px;
+        cursor: pointer;
+      }
+
+      .slide {
+        position: absolute;
+        width: 100%;
+        max-width: 1040px;
+        opacity: 0;
+        transform: translateY(18px);
+        transition:
+          opacity 0.35s ease,
+          transform 0.35s ease;
+        pointer-events: none;
+      }
+
+      /* ── Two-column grid ── */
+      .slide-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "img content";
+        gap: 48px;
+        align-items: center;
+        width: 100%;
+      }
+      .slide-grid.flip {
+        grid-template-areas: "content img";
+      }
+      .slide-img {
+        grid-area: img;
+      }
+      .slide-content {
+        grid-area: content;
+      }
+      .img-placeholder {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        border-radius: 18px;
+        border: 2px dashed rgba(44, 32, 21, 0.18);
+        background: rgba(44, 32, 21, 0.03);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        color: rgba(44, 32, 21, 0.42);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .slide.active {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: all;
+      }
+      .slide.out-left {
+        opacity: 0;
+        transform: translateX(-32px);
+      }
+      .slide.out-right {
+        opacity: 0;
+        transform: translateX(32px);
+      }
+
+      .lang-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 4px 13px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        margin-bottom: 22px;
+      }
+      .lang-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+      }
+
+      .accent-bar {
+        height: 3px;
+        width: 56px;
+        border-radius: 2px;
+        margin-bottom: 26px;
+      }
+
+      .slide-title {
+        font-size: clamp(20px, 2.5vw, 34px);
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1.15;
+        margin-bottom: 24px;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .bullets {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .bullet {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        font-size: clamp(12px, 1.25vw, 14.5px);
+        line-height: 1.65;
+        color: #5c4237;
+        font-weight: 400;
+      }
+      .bullet-num {
+        flex-shrink: 0;
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 700;
+        margin-top: 2px;
+      }
+
+      /* section-specific */
+      [data-s="fe"] .accent-bar {
+        background: linear-gradient(90deg, #2563eb, transparent);
+      }
+      [data-s="fe"] .slide-title {
+        background-image: linear-gradient(135deg, #1e3a8a, #2563eb);
+      }
+      [data-s="fe"] .bullet-num {
+        background: rgba(37, 99, 235, 0.12);
+        color: #1e40af;
+      }
+      [data-s="fe"] .lang-dot {
+        background: #2563eb;
+      }
+
+      [data-s="be"] .accent-bar {
+        background: linear-gradient(90deg, #047857, transparent);
+      }
+      [data-s="be"] .slide-title {
+        background-image: linear-gradient(135deg, #064e3b, #047857);
+      }
+      [data-s="be"] .bullet-num {
+        background: rgba(4, 120, 87, 0.12);
+        color: #065f46;
+      }
+      [data-s="be"] .lang-dot {
+        background: #047857;
+      }
+
+      [data-s="db"] .accent-bar {
+        background: linear-gradient(90deg, #b45309, transparent);
+      }
+      [data-s="db"] .slide-title {
+        background-image: linear-gradient(135deg, #78350f, #b45309);
+      }
+      [data-s="db"] .bullet-num {
+        background: rgba(180, 83, 9, 0.12);
+        color: #92400e;
+      }
+      [data-s="db"] .lang-dot {
+        background: #b45309;
+      }
+
+      /* ── Bottom bar ── */
+      .bottom-bar {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 48px 26px;
+      }
+
+      .hint {
+        font-size: 11.5px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .kbd {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-family: monospace;
+        color: var(--muted);
+      }
+
+      /* Dots */
+      .dots {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .dot-group {
+        display: flex;
+        gap: 5px;
+      }
+      .dot-group + .dot-group {
+        padding-left: 10px;
+        margin-left: 2px;
+        border-left: 1px solid var(--border);
+      }
+      .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--border);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .dot:hover {
+        transform: scale(1.4);
+      }
+
+      /* Nav buttons */
+      .navs {
+        display: flex;
+        gap: 8px;
+      }
+      .nav-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        line-height: 1;
+      }
+      .nav-btn:hover:not(:disabled) {
+        background: rgba(0, 0, 0, 0.07);
+        border-color: rgba(0, 0, 0, 0.18);
+        transform: translateY(-1px);
+      }
+      .nav-btn:active:not(:disabled) {
+        transform: translateY(0);
+      }
+      .nav-btn:disabled {
+        opacity: 0.25;
+        cursor: default;
+      }
+
+      /* ── Cover slide ── */
+      .cover-wrap {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+      }
+      .cover-badge {
+        display: inline-block;
+        padding: 5px 16px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        background: rgba(180, 83, 9, 0.1);
+        border: 1px solid rgba(180, 83, 9, 0.3);
+        color: #92400e;
+        margin-bottom: 28px;
+      }
+      .cover-title {
+        font-size: clamp(48px, 8vw, 86px);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.0;
+        background: linear-gradient(135deg, #2c2015 0%, #7c5c48 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 16px;
+      }
+      .cover-sub {
+        font-size: clamp(15px, 2vw, 19px);
+        color: #9c8e82;
+        font-weight: 400;
+        margin-bottom: 36px;
+      }
+      .cover-divider {
+        width: 48px;
+        height: 2px;
+        background: linear-gradient(90deg, #b45309, #d97706);
+        border-radius: 2px;
+        margin-bottom: 36px;
+      }
+      .cover-team {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .cover-team span {
+        padding: 7px 18px;
+        border-radius: 100px;
+        background: rgba(44, 32, 21, 0.06);
+        border: 1px solid rgba(44, 32, 21, 0.14);
+        font-size: 14px;
+        font-weight: 600;
+        color: #4a3728;
+      }
+
+      /* ── Outro slide ── */
+      .outro-wrap {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .outro-title {
+        font-size: clamp(42px, 7vw, 76px);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.05;
+        background: linear-gradient(135deg, #2c2015 0%, #7c5c48 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 24px;
+      }
+      .outro-sub {
+        font-size: 15px;
+        color: #9c8e82;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="glow"></div>
+
+    <div class="topbar">
+      <span class="project-title"
+        >MAPUMA Lakáscentrum &mdash; Záródolgozat 2026</span
+      >
+      <span class="slide-counter" id="counter">1 / 18</span>
+    </div>
+
+    <div class="progress-wrap">
+      <div id="progress-fill"></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab fe" id="tab-fe">Frontend</div>
+      <div class="tab be" id="tab-be">Backend</div>
+      <div class="tab db" id="tab-db">Adatbázis</div>
+    </div>
+
+    <div class="slide-area" id="slide-area"></div>
+
+    <div class="bottom-bar">
+      <div class="hint">
+        <span class="kbd">←</span><span class="kbd">→</span> nyilak
+        &nbsp;·&nbsp; kattintás a diára
+      </div>
+      <div class="dots" id="dots"></div>
+      <div class="navs">
+        <button class="nav-btn" id="btn-prev" onclick="navigate(-1)">
+          &#8592;
+        </button>
+        <button class="nav-btn" id="btn-next" onclick="navigate(1)">
+          &#8594;
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const SLIDES = [
+        // ── BORÍTÓ ───────────────────────────────────────────────
+        { s: "cover", type: "cover" },
+        // ── FRONTEND Magyar ──────────────────────────────────────
+        {
+          s: "fe",
+          lang: "Magyar",
+          title: "Technológiai alap",
+          bullets: [
+            "A frontend React és TypeScript kombinációjával készült, amely típusbiztonságot és átlátható komponensstruktúrát biztosít.",
+            "Az alkalmazás Single Page Application elven működik, az oldalváltások React Router segítségével történnek, teljes újratöltés nélkül.",
+          ],
+        },
+        {
+          s: "fe",
+          lang: "Magyar",
+          title: "Megjelenés és kommunikáció",
+          bullets: [
+            "A stílusozás Tailwind CSS alapú, egyedi CSS változókkal kiegészítve, amelyek az egész alkalmazásban egységes megjelenést biztosítanak.",
+            "A bejelentkezett felhasználó adatait és tokenjét egy AuthProvider kontextus őrzi — sessionStorage-ban tárolva, így a böngészőfül bezárásakor automatikus kijelentkezés történik.",
+            "A backend kommunikáció Axios-on keresztül valósul meg, egy közös konfigurációs fájllal, amely minden kéréshez automatikusan hozzáfűzi a hitelesítési tokent.",
+          ],
+        },
+        {
+          s: "fe",
+          lang: "Magyar",
+          title: "Komponensek és reszponzivitás",
+          bullets: [
+            "Az újrafelhasználható komponensek között található egy drag-and-drop képfeltöltő, egy egyedi multi-select felszereltség-választó, egy lightboxos képgaléria és egy törtszámot is kezelő csillagos értékelő.",
+            "A reszponzív kialakítás öt töréspontot alkalmaz 480px-től 1024px-ig, mobilon egyoszlopos elrendezéssel és animált hamburger menüvel.",
+          ],
+        },
+        // ── FRONTEND English ─────────────────────────────────────
+        {
+          s: "fe",
+          lang: "English",
+          title: "Project Structure & Admin",
+          bullets: [
+            "The file structure is cleanly separated into pages, components, hooks, layouts, routes, and API config, making the codebase easy to navigate and extend.",
+            "The admin dashboard is built from four dedicated components covering users, listings, rentings, and reviews, each with table views and two-step delete confirmation.",
+          ],
+        },
+        {
+          s: "fe",
+          lang: "English",
+          title: "Filtering & UI Components",
+          bullets: [
+            "The FilterBar lets users filter properties by city, county, price range, area, room count, and availability, with advanced filters hidden in a collapsible panel to save screen space.",
+            "The UI component library provides base elements like buttons, inputs, and sliders, all styled with Tailwind to match the project's visual identity.",
+            "The StarReviews component handles fractional values by rendering partially filled stars, giving a more precise visual representation of average ratings.",
+          ],
+        },
+        {
+          s: "fe",
+          lang: "English",
+          title: "Navigation & Testing",
+          bullets: [
+            "The Navbar collapses into a hamburger menu on small screens, which closes automatically on outside click detected via a useRef hook.",
+            "Frontend testing covered key user flows such as unauthorized access redirection, permission-based button visibility, listing creation, and city-based filtering.",
+          ],
+        },
+        // ── BACKEND Magyar ───────────────────────────────────────
+        {
+          s: "be",
+          lang: "Magyar",
+          title: "Keretrendszer és hitelesítés",
+          bullets: [
+            "A backend Laravel PHP keretrendszerre épül, amely MVC architektúrát követve tisztán elkülöníti az adatkezelést, az üzleti logikát és az API réteget.",
+            "A hitelesítés Laravel Sanctum csomag segítségével valósul meg token alapon, amely állapotmentes és jól illeszkedik a különálló frontend architektúrához.",
+          ],
+        },
+        {
+          s: "be",
+          lang: "Magyar",
+          title: "Adattárolás és képkezelés",
+          bullets: [
+            "Az adatbázis középpontjában a rents tábla áll, köré épülnek a referencia táblák, kapcsolótáblák és a bérlési tranzakciókat kezelő rentings tábla.",
+            "A képek Base64 formátumban kerülnek az adatbázisba, így fájlrendszeres tárolás nélkül közvetlenül kiszolgálhatók a frontend számára.",
+          ],
+        },
+        {
+          s: "be",
+          lang: "Magyar",
+          title: "API réteg és üzleti logika",
+          bullets: [
+            "A reviews tábla azonosítója megegyezik a kapcsolódó rentings rekord azonosítójával, ezzel adatbázis szinten biztosítva, hogy egy bérléshez csak egyetlen értékelés tartozhat.",
+            "A rentings tábla a tranzakció pillanatában érvényes árat is rögzíti, így az ár később sem változik meg visszamenőleg, ha a hirdetés ára módosul.",
+            "Az API végpontok három szintre osztottak: publikus, bejelentkezett felhasználói és adminisztrátori — amelyeket mind a frontend, mind a backend külön ellenőriz.",
+          ],
+        },
+        // ── BACKEND English ──────────────────────────────────────
+        {
+          s: "be",
+          lang: "English",
+          title: "RESTful API Architecture",
+          bullets: [
+            "The backend exposes a fully RESTful API that communicates exclusively in JSON, using standard HTTP methods and status codes to indicate the result of each operation.",
+            "Each controller is responsible for a single resource, keeping the business logic focused and testable — from authentication and listings to image uploads and reviews.",
+          ],
+        },
+        {
+          s: "be",
+          lang: "English",
+          title: "Data Integrity & Security",
+          bullets: [
+            "Reference data such as cities, counties, rent types, and utility options are stored in separate tables, preventing typos and making filtering reliable and consistent.",
+            "The many-to-many relationship between properties and amenities is handled through a junction table, allowing any number of features to be assigned without modifying the main listings table.",
+            "Password hashing, token generation, and validation are all handled by Laravel's built-in tools, reducing the need for custom security logic.",
+          ],
+        },
+        {
+          s: "be",
+          lang: "English",
+          title: "Deployment & Testing",
+          bullets: [
+            "The project supports Docker-based deployment through a docker-compose setup that runs the Laravel backend, React frontend, and MySQL database as separate containers.",
+            "Backend functionality was validated through feature tests covering login, registration, listing creation, image upload, and duplicate review prevention.",
+          ],
+        },
+        // ── ADATBÁZIS Magyar ─────────────────────────────────────
+        {
+          s: "db",
+          lang: "Magyar",
+          title: "Adatbázis-séma alapjai",
+          bullets: [
+            "Az adatbázis tervezésének középpontjában a rents tábla áll, amelyhez az összes többi tábla közvetlenül vagy közvetve kapcsolódik.",
+            "A városok, megyék, bérlési típusok és felszereltségi elemek külön referencia táblákban vannak tárolva, ezzel biztosítva az adatok következetességét és könnyű karbantarthatóságát.",
+          ],
+        },
+        {
+          s: "db",
+          lang: "Magyar",
+          title: "Kapcsolatok és egyedi megoldások",
+          bullets: [
+            "A felszereltségi elemek és az ingatlanok között many-to-many kapcsolat van, amelyet egy utilities kapcsolótábla kezel a rents és utility_options táblák között.",
+            "A reviews tábla egyedi tervezési döntése, hogy azonosítója nem auto-increment, hanem megegyezik a kapcsolódó rentings rekord azonosítójával — így adatbázis szinten kizárt a duplikált értékelés.",
+          ],
+        },
+        {
+          s: "db",
+          lang: "Magyar",
+          title: "Tranzakciók és teljesítmény",
+          bullets: [
+            "A rentings tábla a bérlés pillanatában érvényes árat is eltárolja, így az eredeti tranzakciós ár visszamenőleg sem változik meg, ha a hirdetés ára később módosul.",
+            "A képek a rent_images táblában Base64 formátumban tárolódnak, minden rekord a saját rent_id-jén keresztül kapcsolódik az ingatlanhoz.",
+            "A táblák számát tudatosan minimálisra korlátozták, elkerülve a feleslegesen elaprózott adatmodellt, amely lassabb JOIN lekérdezéseket eredményezne.",
+          ],
+        },
+        // ── ADATBÁZIS English ────────────────────────────────────
+        {
+          s: "db",
+          lang: "English",
+          title: "Normalized Schema Design",
+          bullets: [
+            "The database follows a normalized structure where lookup data like cities, counties, and rent types are kept in separate reference tables rather than stored as plain text in the listings.",
+            "The junction table pattern is used for amenities, allowing flexible assignment of any number of features to a property without altering the core listings table.",
+          ],
+        },
+        {
+          s: "db",
+          lang: "English",
+          title: "Key Design Decisions",
+          bullets: [
+            "A deliberate design choice was made in the reviews table: its primary key is manually set to match the related renting record's ID, enforcing a strict one-review-per-rental rule at the database level.",
+            "The rent_images table stores images as Base64-encoded strings, which simplifies retrieval since no file system path management is needed.",
+          ],
+        },
+        {
+          s: "db",
+          lang: "English",
+          title: "Integrity & Performance",
+          bullets: [
+            "The rentings table captures the agreed price at the time of transaction, creating an immutable financial record that remains accurate even if the listing price changes later.",
+            "Foreign key relationships between tables ensure referential integrity throughout the data model, preventing orphaned records from accumulating over time.",
+            "Performance was kept in mind during the design phase — an overly fragmented schema would lead to complex multi-join queries and slower response times on listing pages.",
+          ],
+        },
+        // ── ZÁRÓ ─────────────────────────────────────────────────
+        { s: "outro", type: "outro" },
+      ];
+
+      const COLORS = { fe: "#3b82f6", be: "#10b981", db: "#f59e0b", cover: "#6366f1", outro: "#6366f1" };
+      const GLOWS = {
+        fe: "radial-gradient(ellipse 70% 55% at 10% 30%, rgba(37,99,235,.07) 0%, transparent 65%), radial-gradient(ellipse 40% 40% at 90% 70%, rgba(37,99,235,.04) 0%, transparent 60%)",
+        be: "radial-gradient(ellipse 70% 55% at 10% 30%, rgba(4,120,87,.07) 0%, transparent 65%), radial-gradient(ellipse 40% 40% at 90% 70%, rgba(4,120,87,.04) 0%, transparent 60%)",
+        db: "radial-gradient(ellipse 70% 55% at 10% 30%, rgba(180,83,9,.07) 0%, transparent 65%), radial-gradient(ellipse 40% 40% at 90% 70%, rgba(180,83,9,.04) 0%, transparent 60%)",
+        cover: "radial-gradient(ellipse 60% 60% at 50% 40%, rgba(180,83,9,.06) 0%, transparent 65%)",
+        outro: "radial-gradient(ellipse 60% 60% at 50% 40%, rgba(180,83,9,.06) 0%, transparent 65%)",
+      };
+      const GRADS = {
+        fe: "linear-gradient(90deg, #1e40af, #2563eb)",
+        be: "linear-gradient(90deg, #064e3b, #047857)",
+        db: "linear-gradient(90deg, #78350f, #b45309)",
+        cover: "linear-gradient(90deg, #78350f, #b45309)",
+        outro: "linear-gradient(90deg, #78350f, #b45309)",
+      };
+      const FLAG = { Magyar: "🇭🇺", English: "🇬🇧" };
+
+      let cur = 0;
+
+      // Build slides
+      const area = document.getElementById("slide-area");
+      SLIDES.forEach((sl, i) => {
+        const div = document.createElement("div");
+        div.className = "slide" + (i === 0 ? " active" : "");
+        div.dataset.i = i;
+        div.dataset.s = sl.s;
+
+        if (sl.type === "cover") {
+          div.innerHTML = `
+    <div class="cover-wrap">
+      <div class="cover-badge">Záródolgozat 2026</div>
+      <h1 class="cover-title">MAPUMA<br>Lakáscentrum</h1>
+      <p class="cover-sub">Kiadó ingatlan kereső webalkalmazás</p>
+      <div class="cover-divider"></div>
+      <div class="cover-team">
+        <span>Urbanics Pál</span>
+        <span>Martonfalvai Manassé Antal</span>
+        <span>Márki András</span>
+      </div>
+    </div>`;
+        } else if (sl.type === "outro") {
+          div.innerHTML = `
+    <div class="outro-wrap">
+      <h2 class="outro-title">Köszönjük<br>a figyelmet!</h2>
+      <p class="outro-sub">MAPUMA Lakáscentrum &mdash; 2026</p>
+    </div>`;
+        } else {
+          const flip = i % 2 === 0 ? "" : "flip";
+          div.innerHTML = `
+    <div class="slide-grid ${flip}">
+      <div class="slide-img">
+        <div class="img-placeholder">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>Kép helye</span>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="lang-tag">
+          <span class="lang-dot"></span>${FLAG[sl.lang]} ${sl.lang}
+        </div>
+        <div class="accent-bar"></div>
+        <h2 class="slide-title">${sl.title}</h2>
+        <ul class="bullets">
+          ${sl.bullets
+            .map(
+              (b, bi) => `
+          <li class="bullet">
+            <span class="bullet-num">${bi + 1}</span>
+            <span>${b}</span>
+          </li>`,
+            )
+            .join("")}
+        </ul>
+      </div>
+    </div>`;
+        }
+
+        area.appendChild(div);
+      });
+
+      // Build dots
+      const dotsEl = document.getElementById("dots");
+
+      const makeDot = (idx, title) => {
+        const d = document.createElement("div");
+        d.className = "dot";
+        d.id = `dot-${idx}`;
+        d.title = title;
+        d.onclick = () => goTo(idx);
+        return d;
+      };
+
+      // intro dot
+      const introGroup = document.createElement("div");
+      introGroup.className = "dot-group";
+      introGroup.appendChild(makeDot(0, "Borító"));
+      dotsEl.appendChild(introGroup);
+
+      // content dots (indices 1–18)
+      [["fe", "Frontend"], ["be", "Backend"], ["db", "Adatbázis"]].forEach(([sec, label], gi) => {
+        const g = document.createElement("div");
+        g.className = "dot-group";
+        for (let i = 0; i < 6; i++) {
+          const idx = gi * 6 + i + 1;
+          g.appendChild(makeDot(idx, `${label} ${i + 1}`));
+        }
+        dotsEl.appendChild(g);
+      });
+
+      // outro dot
+      const outroGroup = document.createElement("div");
+      outroGroup.className = "dot-group";
+      outroGroup.appendChild(makeDot(SLIDES.length - 1, "Záró"));
+      dotsEl.appendChild(outroGroup);
+
+      function updateUI() {
+        const sl = SLIDES[cur];
+        const col = COLORS[sl.s];
+        const total = SLIDES.length;
+
+        document.getElementById("counter").textContent =
+          `${cur + 1} / ${total}`;
+
+        const pf = document.getElementById("progress-fill");
+        pf.style.width = `${((cur + 1) / total) * 100}%`;
+        pf.style.background = GRADS[sl.s];
+
+        document.getElementById("glow").style.background = GLOWS[sl.s];
+
+        ["fe", "be", "db"].forEach((sec) => {
+          document.getElementById("tab-" + sec).className =
+            `tab ${sec}` + (sl.s === sec ? " on" : "");
+        });
+
+        document.querySelectorAll(".dot").forEach((d, i) => {
+          const c = COLORS[SLIDES[i].s];
+          if (i === cur) {
+            d.style.cssText = `background:${c}; transform:scale(1.6); box-shadow:0 0 7px ${c}99;`;
+          } else {
+            d.style.cssText = "";
+          }
+        });
+
+        document.getElementById("btn-prev").disabled = cur === 0;
+        document.getElementById("btn-next").disabled = cur === total - 1;
+      }
+
+      function goTo(idx) {
+        if (idx < 0 || idx >= SLIDES.length || idx === cur) return;
+
+        document
+          .querySelector(`.slide[data-i="${cur}"]`)
+          .classList.remove("active");
+        document
+          .querySelector(`.slide[data-i="${idx}"]`)
+          .classList.add("active");
+
+        cur = idx;
+        updateUI();
+      }
+
+      function navigate(dir) {
+        goTo(cur + dir);
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === " ") {
+          e.preventDefault();
+          navigate(1);
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          e.preventDefault();
+          navigate(-1);
+        }
+      });
+
+      area.addEventListener("click", () => navigate(1));
+
+      updateUI();
+    </script>
+  </body>
+</html>
