@@ -146,7 +146,7 @@
       .slide {
         position: absolute;
         width: 100%;
-        max-width: 1040px;
+        max-width: 1300px;
         opacity: 0;
         transform: translateY(18px);
         transition:
@@ -169,6 +169,7 @@
       }
       .slide-img {
         grid-area: img;
+        overflow: visible;
       }
       .slide-content {
         grid-area: content;
@@ -189,6 +190,7 @@
         font-weight: 600;
         letter-spacing: 0.06em;
         text-transform: uppercase;
+        overflow: visible;
       }
       .slide.active {
         opacity: 1;
@@ -320,7 +322,7 @@
         z-index: 10;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
         padding: 14px 48px 26px;
       }
 
@@ -426,7 +428,7 @@
         font-size: clamp(48px, 8vw, 86px);
         font-weight: 800;
         letter-spacing: -0.04em;
-        line-height: 1.0;
+        line-height: 1;
         background: linear-gradient(135deg, #2c2015 0%, #7c5c48 100%);
         background-clip: text;
         -webkit-background-clip: text;
@@ -511,19 +513,7 @@
     <div class="slide-area" id="slide-area"></div>
 
     <div class="bottom-bar">
-      <div class="hint">
-        <span class="kbd">←</span><span class="kbd">→</span> nyilak
-        &nbsp;·&nbsp; kattintás a diára
-      </div>
       <div class="dots" id="dots"></div>
-      <div class="navs">
-        <button class="nav-btn" id="btn-prev" onclick="navigate(-1)">
-          &#8592;
-        </button>
-        <button class="nav-btn" id="btn-next" onclick="navigate(1)">
-          &#8594;
-        </button>
-      </div>
     </div>
 
     <script>
@@ -535,54 +525,58 @@
           s: "fe",
           lang: "Magyar",
           title: "Technológiai alap",
+          image: "screenshots/1dia.png",
           bullets: [
-            "A frontend React és TypeScript kombinációjával készült, amely típusbiztonságot és átlátható komponensstruktúrát biztosít.",
-            "Az alkalmazás Single Page Application elven működik, az oldalváltások React Router segítségével történnek, teljes újratöltés nélkül.",
+            "React és TypeScript",
+            "Az alkalmazás Single Page Application elven működik",
           ],
         },
         {
           s: "fe",
           lang: "Magyar",
-          title: "Megjelenés és kommunikáció",
+          title: "Stílusozás és kommunikáció",
+          image: "screenshots/2dia.png",
           bullets: [
-            "A stílusozás Tailwind CSS alapú, egyedi CSS változókkal kiegészítve, amelyek az egész alkalmazásban egységes megjelenést biztosítanak.",
-            "A bejelentkezett felhasználó adatait és tokenjét egy AuthProvider kontextus őrzi — sessionStorage-ban tárolva, így a böngészőfül bezárásakor automatikus kijelentkezés történik.",
-            "A backend kommunikáció Axios-on keresztül valósul meg, egy közös konfigurációs fájllal, amely minden kéréshez automatikusan hozzáfűzi a hitelesítési tokent.",
+            "A stílusozás Tailwind CSS alapú, egyedi CSS változókkal kiegészítve",
+            "A backend kommunikáció Axios-on keresztül valósul meg",
           ],
         },
         {
           s: "fe",
           lang: "Magyar",
           title: "Komponensek és reszponzivitás",
+          image: "screenshots/3dia.png",
           bullets: [
-            "Az újrafelhasználható komponensek között található egy drag-and-drop képfeltöltő, egy egyedi multi-select felszereltség-választó, egy lightboxos képgaléria és egy törtszámot is kezelő csillagos értékelő.",
-            "A reszponzív kialakítás öt töréspontot alkalmaz 480px-től 1024px-ig, mobilon egyoszlopos elrendezéssel és animált hamburger menüvel.",
+            "Drag-and-drop képfeltöltő",
+            "Reszponzív kialakítás 480px-től 1024px-ig",
           ],
         },
         // ── FRONTEND English ─────────────────────────────────────
         {
           s: "fe",
           lang: "English",
-          title: "Project Structure & Admin",
+          title: "Admin & Filtering",
+          image: "screenshots/4dia.png",
           bullets: [
-            "The file structure is cleanly separated into pages, components, hooks, layouts, routes, and API config, making the codebase easy to navigate and extend.",
             "The admin dashboard is built from four dedicated components covering users, listings, rentings, and reviews, each with table views and two-step delete confirmation.",
+            "FilterBar lets users filter properties by city, county, price range, area, room count, and availability, with advanced filters hidden in a collapsible panel.",
           ],
         },
         {
           s: "fe",
           lang: "English",
-          title: "Filtering & UI Components",
+          title: "UI Components",
+          image: "screenshots/5dia.png",
           bullets: [
-            "The FilterBar lets users filter properties by city, county, price range, area, room count, and availability, with advanced filters hidden in a collapsible panel to save screen space.",
-            "The UI component library provides base elements like buttons, inputs, and sliders, all styled with Tailwind to match the project's visual identity.",
-            "The StarReviews component handles fractional values by rendering partially filled stars, giving a more precise visual representation of average ratings.",
+            "UI component library provides base elements like buttons, inputs, and sliders, all styled with Tailwind to match the project's visual identity.",
+            "StarReviews component handles fractional values by rendering partially filled stars, giving a more precise visual representation of average ratings.",
           ],
         },
         {
           s: "fe",
           lang: "English",
           title: "Navigation & Testing",
+          image: "screenshots/6dia.png",
           bullets: [
             "The Navbar collapses into a hamburger menu on small screens, which closes automatically on outside click detected via a useRef hook.",
             "Frontend testing covered key user flows such as unauthorized access redirection, permission-based button visibility, listing creation, and city-based filtering.",
@@ -592,87 +586,93 @@
         {
           s: "be",
           lang: "Magyar",
-          title: "Keretrendszer és hitelesítés",
+          title: "Laravel & Hitelesítés",
           bullets: [
-            "A backend Laravel PHP keretrendszerre épül, amely MVC architektúrát követve tisztán elkülöníti az adatkezelést, az üzleti logikát és az API réteget.",
-            "A hitelesítés Laravel Sanctum csomag segítségével valósul meg token alapon, amely állapotmentes és jól illeszkedik a különálló frontend architektúrához.",
+            "Laravel PHP keretrendszer, MVC architektúra",
+            "Sanctum csomag, token alapú autentikáció",
+            "API szintek: publikus, felhasználó, admin",
           ],
         },
         {
           s: "be",
           lang: "Magyar",
-          title: "Adattárolás és képkezelés",
+          title: "Képkezelés & Szűrés",
           bullets: [
-            "Az adatbázis középpontjában a rents tábla áll, köré épülnek a referencia táblák, kapcsolótáblák és a bérlési tranzakciókat kezelő rentings tábla.",
-            "A képek Base64 formátumban kerülnek az adatbázisba, így fájlrendszeres tárolás nélkül közvetlenül kiszolgálhatók a frontend számára.",
+            "Base64 képek az adatbázisban",
+            "Dinamikus szűrés SQL JOIN-okkal",
+            "Teljesítmény optimalizálás aggregációval",
           ],
         },
         {
           s: "be",
           lang: "Magyar",
-          title: "API réteg és üzleti logika",
+          title: "Jogosultságok & Biztonság",
           bullets: [
-            "A reviews tábla azonosítója megegyezik a kapcsolódó rentings rekord azonosítójával, ezzel adatbázis szinten biztosítva, hogy egy bérléshez csak egyetlen értékelés tartozhat.",
-            "A rentings tábla a tranzakció pillanatában érvényes árat is rögzíti, így az ár később sem változik meg visszamenőleg, ha a hirdetés ára módosul.",
-            "Az API végpontok három szintre osztottak: publikus, bejelentkezett felhasználói és adminisztrátori — amelyeket mind a frontend, mind a backend külön ellenőriz.",
+            "Felhasználói jogosultságok ellenőrzése",
+            "Reviews: egy értékelés/bérlés",
+            "Árrögzítés: tranzakció pillanatában rögzített ár",
           ],
         },
         // ── BACKEND English ──────────────────────────────────────
         {
           s: "be",
           lang: "English",
-          title: "RESTful API Architecture",
+          title: "RESTful API & Security",
           bullets: [
-            "The backend exposes a fully RESTful API that communicates exclusively in JSON, using standard HTTP methods and status codes to indicate the result of each operation.",
-            "Each controller is responsible for a single resource, keeping the business logic focused and testable — from authentication and listings to image uploads and reviews.",
+            "RESTful API with JSON communication",
+            "Laravel built-in password hashing & token validation",
+            "Rate limiting: 3 requests/minute per IP",
           ],
         },
         {
           s: "be",
           lang: "English",
-          title: "Data Integrity & Security",
+          title: "Architecture & Deployment",
           bullets: [
-            "Reference data such as cities, counties, rent types, and utility options are stored in separate tables, preventing typos and making filtering reliable and consistent.",
-            "The many-to-many relationship between properties and amenities is handled through a junction table, allowing any number of features to be assigned without modifying the main listings table.",
-            "Password hashing, token generation, and validation are all handled by Laravel's built-in tools, reducing the need for custom security logic.",
+            "Single resource per controller",
+            "Docker-compose: Laravel, React, MySQL",
+            "Many-to-many amenities via junction table",
           ],
         },
         {
           s: "be",
           lang: "English",
-          title: "Deployment & Testing",
+          title: "Testing & Quality Assurance",
           bullets: [
-            "The project supports Docker-based deployment through a docker-compose setup that runs the Laravel backend, React frontend, and MySQL database as separate containers.",
-            "Backend functionality was validated through feature tests covering login, registration, listing creation, image upload, and duplicate review prevention.",
+            "Feature tests: login, registration, listings",
+            "Image upload & duplicate review prevention",
+            "Reference data in separate tables",
           ],
         },
         // ── ADATBÁZIS Magyar ─────────────────────────────────────
         {
           s: "db",
           lang: "Magyar",
-          title: "Adatbázis-séma alapjai",
+          title: "Normalized Schema Design",
           bullets: [
-            "Az adatbázis tervezésének középpontjában a rents tábla áll, amelyhez az összes többi tábla közvetlenül vagy közvetve kapcsolódik.",
-            "A városok, megyék, bérlési típusok és felszereltségi elemek külön referencia táblákban vannak tárolva, ezzel biztosítva az adatok következetességét és könnyű karbantarthatóságát.",
+            "Rents tábla központi szerepe",
+            "Reference táblák: városok, megyék, típusok",
+            "Junction table: amenities many-to-many",
           ],
         },
         {
           s: "db",
           lang: "Magyar",
-          title: "Kapcsolatok és egyedi megoldások",
+          title: "Business Rules at Database Level",
           bullets: [
-            "A felszereltségi elemek és az ingatlanok között many-to-many kapcsolat van, amelyet egy utilities kapcsolótábla kezel a rents és utility_options táblák között.",
-            "A reviews tábla egyedi tervezési döntése, hogy azonosítója nem auto-increment, hanem megegyezik a kapcsolódó rentings rekord azonosítójával — így adatbázis szinten kizárt a duplikált értékelés.",
+            "Reviews: shared PK with rentings",
+            "MySQL triggers: timestamps, status, self-rent",
+            "Strukturális kizárás: duplikált értékelés",
           ],
         },
         {
           s: "db",
           lang: "Magyar",
-          title: "Tranzakciók és teljesítmény",
+          title: "Tervezett fejlesztések",
           bullets: [
-            "A rentings tábla a bérlés pillanatában érvényes árat is eltárolja, így az eredeti tranzakciós ár visszamenőleg sem változik meg, ha a hirdetés ára később módosul.",
-            "A képek a rent_images táblában Base64 formátumban tárolódnak, minden rekord a saját rent_id-jén keresztül kapcsolódik az ingatlanhoz.",
-            "A táblák számát tudatosan minimálisra korlátozták, elkerülve a feleslegesen elaprózott adatmodellt, amely lassabb JOIN lekérdezéseket eredményezne.",
+            "Base64 képek → S3/File storage",
+            "Manuális JOIN → Eloquent relációk",
+            "Eager loading optimalizálás",
           ],
         },
         // ── ADATBÁZIS English ────────────────────────────────────
@@ -708,13 +708,21 @@
         { s: "outro", type: "outro" },
       ];
 
-      const COLORS = { fe: "#3b82f6", be: "#10b981", db: "#f59e0b", cover: "#6366f1", outro: "#6366f1" };
+      const COLORS = {
+        fe: "#3b82f6",
+        be: "#10b981",
+        db: "#f59e0b",
+        cover: "#6366f1",
+        outro: "#6366f1",
+      };
       const GLOWS = {
         fe: "radial-gradient(ellipse 70% 55% at 10% 30%, rgba(37,99,235,.07) 0%, transparent 65%), radial-gradient(ellipse 40% 40% at 90% 70%, rgba(37,99,235,.04) 0%, transparent 60%)",
         be: "radial-gradient(ellipse 70% 55% at 10% 30%, rgba(4,120,87,.07) 0%, transparent 65%), radial-gradient(ellipse 40% 40% at 90% 70%, rgba(4,120,87,.04) 0%, transparent 60%)",
         db: "radial-gradient(ellipse 70% 55% at 10% 30%, rgba(180,83,9,.07) 0%, transparent 65%), radial-gradient(ellipse 40% 40% at 90% 70%, rgba(180,83,9,.04) 0%, transparent 60%)",
-        cover: "radial-gradient(ellipse 60% 60% at 50% 40%, rgba(180,83,9,.06) 0%, transparent 65%)",
-        outro: "radial-gradient(ellipse 60% 60% at 50% 40%, rgba(180,83,9,.06) 0%, transparent 65%)",
+        cover:
+          "radial-gradient(ellipse 60% 60% at 50% 40%, rgba(180,83,9,.06) 0%, transparent 65%)",
+        outro:
+          "radial-gradient(ellipse 60% 60% at 50% 40%, rgba(180,83,9,.06) 0%, transparent 65%)",
       };
       const GRADS = {
         fe: "linear-gradient(90deg, #1e40af, #2563eb)",
@@ -757,17 +765,22 @@
     </div>`;
         } else {
           const flip = i % 2 === 0 ? "" : "flip";
+          const isPhoneImage = sl.image && sl.image.includes("2dia");
+          const imgSize = isPhoneImage ? "90%" : "100%";
+          const imgContent = sl.image
+            ? `<img src="${sl.image}" style="width: ${imgSize}; height: ${imgSize}; object-fit: contain; " alt="${sl.title}">`
+            : `<div class="img-placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="3"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <span>Kép helye</span>
+              </div>`;
           div.innerHTML = `
     <div class="slide-grid ${flip}">
       <div class="slide-img">
-        <div class="img-placeholder">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="3"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-          <span>Kép helye</span>
-        </div>
+        ${imgContent}
       </div>
       <div class="slide-content">
         <div class="lang-tag">
@@ -812,7 +825,11 @@
       dotsEl.appendChild(introGroup);
 
       // content dots (indices 1–18)
-      [["fe", "Frontend"], ["be", "Backend"], ["db", "Adatbázis"]].forEach(([sec, label], gi) => {
+      [
+        ["fe", "Frontend"],
+        ["be", "Backend"],
+        ["db", "Adatbázis"],
+      ].forEach(([sec, label], gi) => {
         const g = document.createElement("div");
         g.className = "dot-group";
         for (let i = 0; i < 6; i++) {
