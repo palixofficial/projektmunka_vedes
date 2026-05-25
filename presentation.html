@@ -644,64 +644,36 @@
             "Reference data in separate tables",
           ],
         },
-        // ── ADATBÁZIS Magyar ─────────────────────────────────────
-        {
-          s: "db",
-          lang: "Magyar",
-          title: "Normalized Schema Design",
-          bullets: [
-            "Rents tábla központi szerepe",
-            "Reference táblák: városok, megyék, típusok",
-            "Junction table: amenities many-to-many",
-          ],
-        },
-        {
-          s: "db",
-          lang: "Magyar",
-          title: "Business Rules at Database Level",
-          bullets: [
-            "Reviews: shared PK with rentings",
-            "MySQL triggers: timestamps, status, self-rent",
-            "Strukturális kizárás: duplikált értékelés",
-          ],
-        },
-        {
-          s: "db",
-          lang: "Magyar",
-          title: "Tervezett fejlesztések",
-          bullets: [
-            "Base64 képek → S3/File storage",
-            "Manuális JOIN → Eloquent relációk",
-            "Eager loading optimalizálás",
-          ],
-        },
         // ── ADATBÁZIS English ────────────────────────────────────
         {
           s: "db",
           lang: "English",
           title: "Normalized Schema Design",
+          image: "screenshots/13dia.png",
           bullets: [
-            "The database follows a normalized structure where lookup data like cities, counties, and rent types are kept in separate reference tables rather than stored as plain text in the listings.",
-            "The junction table pattern is used for amenities, allowing flexible assignment of any number of features to a property without altering the core listings table.",
+            "The rents table sits at the center of the data model, with reference tables for counties, cities, property types, and utility options. Repeated values are kept out of the main table, protecting against typos and making filtering reliable and extensible.",
+            "A junction table called utilities implements the many-to-many relationship between properties and amenities, allowing any combination of features per listing — and new amenity types — without modifying the schema.",
           ],
         },
         {
           s: "db",
           lang: "English",
-          title: "Key Design Decisions",
+          title: "Business Rules at the Database Level",
+          image: "screenshots/14dia.png",
           bullets: [
-            "A deliberate design choice was made in the reviews table: its primary key is manually set to match the related renting record's ID, enforcing a strict one-review-per-rental rule at the database level.",
-            "The rent_images table stores images as Base64-encoded strings, which simplifies retrieval since no file system path management is needed.",
+            "The reviews table uses a shared primary key with rentings instead of its own auto-increment ID, enforcing a strict one-review-per-rental rule at the schema level — duplicate reviews are structurally impossible, not just rejected by validation.",
+            "Four MySQL triggers enforce business rules directly in the storage layer: automatic timestamps on new reviews, automatic clearing of highlighted status when a listing becomes unavailable, and prevention of self-renting where the same user appears as both renter and owner.",
           ],
         },
+        // ── ADATBÁZIS Magyar ─────────────────────────────────────
         {
           s: "db",
-          lang: "English",
-          title: "Integrity & Performance",
+          lang: "Magyar",
+          title: "Tervezett fejlesztések",
+          image: "screenshots/15dia.png",
           bullets: [
-            "The rentings table captures the agreed price at the time of transaction, creating an immutable financial record that remains accurate even if the listing price changes later.",
-            "Foreign key relationships between tables ensure referential integrity throughout the data model, preventing orphaned records from accumulating over time.",
-            "Performance was kept in mind during the design phase — an overly fragmented schema would lead to complex multi-join queries and slower response times on listing pages.",
+            "Az ingatlanképek jelenleg Base64-kódolt szövegként tárolódnak az adatbázisban, ami egyszerűsíti a kiszolgálást, de növeli a tábla méretét és lassítja a lekérdezéseket. A következő iterációban a képek fájlrendszerre vagy felhőtárolóba kerülnek (pl. S3), az adatbázisban pedig csak az elérési út marad.",
+            "A vezérlők jelenleg manuális JOIN-okkal dolgoznak DB::table() hívásokon keresztül. A tervezett refaktor során a modellek megkapják a megfelelő Eloquent relációkat (hasMany, belongsTo, belongsToMany), ami olvashatóbb, biztonságosabb kódot és automatikus eager loading támogatást eredményez.",
           ],
         },
         // ── ZÁRÓ ─────────────────────────────────────────────────
@@ -824,16 +796,19 @@
       introGroup.appendChild(makeDot(0, "Borító"));
       dotsEl.appendChild(introGroup);
 
-      // content dots (indices 1–18)
+      // content dots (indices 1–16)
       [
-        ["fe", "Frontend"],
-        ["be", "Backend"],
-        ["db", "Adatbázis"],
-      ].forEach(([sec, label], gi) => {
+        ["fe", "Frontend", 6],
+        ["be", "Backend", 6],
+        ["db", "Adatbázis", 3],
+      ].forEach(([sec, label, count], gi) => {
         const g = document.createElement("div");
         g.className = "dot-group";
-        for (let i = 0; i < 6; i++) {
-          const idx = gi * 6 + i + 1;
+        let startIdx = 1;
+        if (gi === 1) startIdx = 7;  // Backend starts at slide 7
+        if (gi === 2) startIdx = 13; // Database starts at slide 13
+        for (let i = 0; i < count; i++) {
+          const idx = startIdx + i;
           g.appendChild(makeDot(idx, `${label} ${i + 1}`));
         }
         dotsEl.appendChild(g);
